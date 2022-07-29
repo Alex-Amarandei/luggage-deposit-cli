@@ -8,9 +8,20 @@ import alexamarandei.dao.impl.StorageDaoImpl;
 import alexamarandei.exceptions.InvalidOptionException;
 import alexamarandei.models.Pricing;
 
+/**
+ * Entry point for the StorageManager 1.0 App.
+ */
 public class App {
+    /**
+     * The number of luggages ever deposited in the storage facility.
+     * Only incremented and never decremented.
+     * Used in creating the unique client id.
+     */
     public static int luggageCounter = 0;
 
+    /**
+     * @param args The command line arguments.
+     */
     public static void main(String[] args) {
         boolean sessionIsActive = true;
         StorageDao storageDao = new StorageDaoImpl("@DM1n", 100, new Pricing(10, 5));

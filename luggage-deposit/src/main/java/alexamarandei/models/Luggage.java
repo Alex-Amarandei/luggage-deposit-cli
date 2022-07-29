@@ -3,6 +3,12 @@ package alexamarandei.models;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * A Model for a Luggage, encapsulating:
+ * - the Id at the time of depositing
+ * - the last name of its owner
+ * - the time of depositing
+ */
 public class Luggage {
     private int luggageId;
     private String ownerLastName;
@@ -10,6 +16,12 @@ public class Luggage {
 
     //// Constructor ////
 
+    /**
+     * @param luggageId The luggage id (it is the current luggage counter value)
+     * @see alexamarandei.App#luggageCounter
+     * 
+     * @param ownerLastName The last name of the luggage's owner
+     */
     public Luggage(int luggageId, String ownerLastName) {
         this.luggageId = luggageId;
         this.ownerLastName = ownerLastName;
@@ -18,14 +30,26 @@ public class Luggage {
 
     //// Getters ////
 
+    /**
+     * @return The luggage id (it is the luggage counter value at the time of
+     *         depositing)
+     * @see alexamarandei.App#luggageCounter
+     * 
+     */
     public int getLuggageId() {
         return luggageId;
     }
 
+    /**
+     * @return The last name of the luggage's owner
+     */
     public String getOwnerLastName() {
         return ownerLastName;
     }
 
+    /**
+     * @return The time when the luggage was deposited
+     */
     public LocalDateTime getTimeOfDeposit() {
         return timeOfDeposit;
     }

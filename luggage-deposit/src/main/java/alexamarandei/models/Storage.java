@@ -2,6 +2,12 @@ package alexamarandei.models;
 
 import alexamarandei.exceptions.AccessNotAllowedException;
 
+/**
+ * A Model for a Storage facility, encapsulating:
+ * - the Admin's access code
+ * - The total number of spots available for luggage depositing
+ * - the pricing structure of the facility
+ */
 public final class Storage {
     private static volatile Storage instance;
 
@@ -22,6 +28,14 @@ public final class Storage {
 
     //// Singleton Instance Provider ////
 
+    /**
+     * @param adminCode            The Admin's access code
+     * @param numberOfStorageUnits The total number of spots available for luggage
+     *                             depositing
+     * @param pricing              The pricing structure of the facility
+     * 
+     * @return The Singleton instance of the storage
+     */
     public static Storage getInstance(
             String adminCode,
             int numberOfStorageUnits,
@@ -43,21 +57,40 @@ public final class Storage {
 
     //// Getters ////
 
+    /**
+     * @return The total number of spots available for luggage
+     *         depositing
+     */
     public int getNumberOfStorageUnits() {
         return numberOfStorageUnits;
     }
 
+    /**
+     * @return The pricing structure of the facility
+     */
     public Pricing getPricing() {
         return pricing;
     }
 
     //// Setters ////
 
+    /**
+     * @param adminCode            The code used to prove whether or not the person
+     *                             trying to alter the storage data is the admin.
+     * @param numberOfStorageUnits Total number of spots available for luggage
+     *                             depositing.
+     */
     public void setNumberOfStorageUnits(String adminCode, int numberOfStorageUnits) {
         if (isAdmin(adminCode))
             this.numberOfStorageUnits = numberOfStorageUnits;
     }
 
+    /**
+     * @param adminCode The code used to prove whether or not the person
+     *                  trying to alter the storage data is the admin.
+     * @param pricing   The price for the first hour of storage and for
+     *                  the rest of the hours.
+     */
     public void setPricing(String adminCode, Pricing pricing) {
         if (isAdmin(adminCode))
             this.pricing = pricing;
@@ -65,6 +98,12 @@ public final class Storage {
 
     //// Private Methods ////
 
+    /**
+     * @param adminCode The code used to prove whether or not the person
+     *                  trying to alter the storage data is the admin.
+     * 
+     * @return Whether or not the code provided is the Admin access code.
+     */
     private boolean isAdmin(String adminCode) {
         try {
             if (!this.adminCode.equals(adminCode))

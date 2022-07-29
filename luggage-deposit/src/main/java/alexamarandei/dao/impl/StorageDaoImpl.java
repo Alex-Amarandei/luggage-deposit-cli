@@ -10,6 +10,10 @@ import alexamarandei.exceptions.InvalidValueException;
 import alexamarandei.models.Pricing;
 import alexamarandei.models.Storage;
 
+/**
+ * @see alexamarandei.dao.StorageDao
+ *      Implementation of the Storage Data Access Object Interface
+ */
 public class StorageDaoImpl implements StorageDao {
     private Storage storage;
     private String adminCode;
@@ -17,6 +21,14 @@ public class StorageDaoImpl implements StorageDao {
 
     //// Constructor ////
 
+    /**
+     * @param adminCode            The code used to prove whether or not the person
+     *                             trying to alter the storage data is the admin.
+     * @param numberOfStorageUnits Total number of spots available for luggage
+     *                             depositing.
+     * @param pricing              The price for the first hour of storage and for
+     *                             the rest of the hours.
+     */
     public StorageDaoImpl(
             String adminCode,
             int numberOfStorageUnits,
@@ -31,6 +43,9 @@ public class StorageDaoImpl implements StorageDao {
 
     //// Overridden Methods ////
 
+    /**
+     * @see alexamarandei.dao.StorageDao#accessAdminMode(java.util.Scanner)
+     */
     @Override
     public void accessAdminMode(Scanner scanner) {
         System.out.println("\n-- Luggage Management --\n");
@@ -86,6 +101,9 @@ public class StorageDaoImpl implements StorageDao {
         }
     }
 
+    /**
+     * @see alexamarandei.dao.StorageDao#getInfo()
+     */
     @Override
     public void getInfo() {
         System.out.println("\n-- Storage Facility Info --\n");
@@ -95,11 +113,17 @@ public class StorageDaoImpl implements StorageDao {
         System.out.println("\nNote: The time is rounded upwards! (e.g. 61 mins -> 2h)");
     }
 
+    /**
+     * @see alexamarandei.dao.StorageDao#getLuggageDao()
+     */
     @Override
     public LuggageDao getLuggageDao() {
         return luggageDao;
     }
 
+    /**
+     * @see alexamarandei.dao.StorageDao#getPricing()
+     */
     @Override
     public Pricing getPricing() {
         return storage.getPricing();
@@ -107,6 +131,11 @@ public class StorageDaoImpl implements StorageDao {
 
     //// Private Methods ////
 
+    /**
+     * @param scanner   Provides input from the user.
+     * @param adminCode The code used to prove whether or not the person
+     *                  trying to alter the storage data is the admin.
+     */
     private void modifyPricing(Scanner scanner, String adminCode) {
         System.out.println("\n-- Modify Pricing --\n");
         int firstHour = -1;
@@ -136,6 +165,11 @@ public class StorageDaoImpl implements StorageDao {
         }
     }
 
+    /**
+     * @param scanner   Provides input from the user.
+     * @param adminCode The code used to prove whether or not the person
+     *                  trying to alter the storage data is the admin.
+     */
     private void modifyStorageUnits(Scanner scanner, String adminCode) {
         System.out.println("\n-- Modify Storage Units --\n");
         System.out.println("- Please provide a new value: ");
