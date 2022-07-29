@@ -1,5 +1,14 @@
 # StorageManager 1.0 App
 
+## Languages, Technologies and Tools
+
+<img align="left" alt="Java" height="30px" width="30px" src="https://github.com/vscode-icons/vscode-icons/blob/master/icons/file_type_java.svg" />
+<img align="left" alt="Maven" height="30px" width="30px" src="https://github.com/vscode-icons/vscode-icons/blob/master/icons/file_type_maven.svg" />
+<img align="left" alt="VSCode" height="30px" width="30px" src="https://github.com/vscode-icons/vscode-icons/blob/master/icons/file_type_vscode.svg" />
+
+<br />
+<br />
+
 ## Contents
 
 1. [Description](#Description)
