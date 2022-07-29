@@ -31,7 +31,7 @@
 - custom exception handling
 - Javadoc documenting
 
-## Sample-Flow
+## Sample Flow
 
 The user runs the app and is shown the following Option Menu:
 
