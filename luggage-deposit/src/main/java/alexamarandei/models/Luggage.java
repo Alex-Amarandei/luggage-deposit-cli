@@ -8,11 +8,15 @@ public class Luggage {
     private String ownerLastName;
     private LocalDateTime timeOfDeposit;
 
+    //// Constructor ////
+
     public Luggage(int luggageId, String ownerLastName) {
         this.luggageId = luggageId;
         this.ownerLastName = ownerLastName;
         this.timeOfDeposit = LocalDateTime.now();
     }
+
+    //// Getters ////
 
     public int getLuggageId() {
         return luggageId;
@@ -25,6 +29,8 @@ public class Luggage {
     public LocalDateTime getTimeOfDeposit() {
         return timeOfDeposit;
     }
+
+    //// Overridden Methods ////
 
     @Override
     public String toString() {
@@ -41,5 +47,4 @@ public class Luggage {
 
         return stringBuilder.toString();
     }
-
 }

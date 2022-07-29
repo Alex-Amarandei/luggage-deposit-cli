@@ -6,7 +6,7 @@ import alexamarandei.models.Luggage;
 import alexamarandei.models.Pricing;
 
 public interface LuggageDao {
-    public void addLuggage(Scanner scanner, int luggageId);
+    public boolean addLuggage(Scanner scanner, int luggageId);
 
     public int getCost(Luggage luggage, Pricing pricing);
 

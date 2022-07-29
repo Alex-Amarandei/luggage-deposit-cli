@@ -5,10 +5,11 @@ import java.util.Scanner;
 import alexamarandei.dao.LuggageDao;
 import alexamarandei.dao.StorageDao;
 import alexamarandei.dao.impl.StorageDaoImpl;
+import alexamarandei.exceptions.InvalidOptionException;
 import alexamarandei.models.Pricing;
 
 public class App {
-    static public int LUGGAGE_COUNTER = 0;
+    public static int luggageCounter = 0;
 
     public static void main(String[] args) {
         boolean sessionIsActive = true;
@@ -34,43 +35,48 @@ public class App {
 
             try {
                 choice = Integer.parseInt(command);
-            } catch (NumberFormatException e) {
-                System.err.println("Please provide a valid number from the options above!");
-                continue;
-            }
 
-            switch (choice) {
-                case 1: {
-                    storageDao.getInfo();
-                    break;
+                switch (choice) {
+                    case 1: {
+                        storageDao.getInfo();
+                        break;
+                    }
+                    case 2: {
+                        if (luggageDao.addLuggage(scanner, luggageCounter))
+                            ++luggageCounter;
+                        break;
+                    }
+                    case 3: {
+                        luggageDao.inspectLuggage(scanner, storageDao.getPricing(), false);
+                        break;
+                    }
+                    case 4: {
+                        luggageDao.inspectLuggage(scanner, storageDao.getPricing(), true);
+                        break;
+                    }
+                    case 5: {
+                        storageDao.accessAdminMode(scanner);
+                        break;
+                    }
+                    case 6: {
+                        sessionIsActive = false;
+                        break;
+                    }
+                    default: {
+                        throw new InvalidOptionException("\nPlease provide a valid number from the options above!\n");
+                    }
                 }
-                case 2: {
-                    luggageDao.addLuggage(scanner, ++LUGGAGE_COUNTER);
-                    break;
-                }
-                case 3: {
-                    luggageDao.inspectLuggage(scanner, storageDao.getPricing(), false);
-                    break;
-                }
-                case 4: {
-                    luggageDao.inspectLuggage(scanner, storageDao.getPricing(), true);
-                    break;
-                }
-                case 5: {
-                    storageDao.accessAdminMode(scanner);
-                    break;
-                }
-                case 6: {
-                    sessionIsActive = false;
-                    break;
-                }
-                default: {
-                    System.err.println("Please provide a valid number from the options above!");
-                }
+
+                Thread.sleep(2000);
+            } catch (NumberFormatException | InvalidOptionException e) {
+                System.err.println(e.getMessage());
+            } catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
 
         scanner.close();
-        System.out.println("----  Bye, Bye! ----");
+        System.out.println("\n----  Bye, Bye! ----\n");
     }
 }

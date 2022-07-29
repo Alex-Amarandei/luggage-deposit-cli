@@ -8,56 +8,46 @@ import java.util.Optional;
 import java.util.Scanner;
 
 import alexamarandei.dao.LuggageDao;
+import alexamarandei.exceptions.InvalidCodeFormatException;
+import alexamarandei.exceptions.LuggageNotFoundException;
 import alexamarandei.models.Luggage;
 import alexamarandei.models.Pricing;
 
 public class LuggageDaoImpl implements LuggageDao {
     private List<Luggage> luggages;
 
+    //// Constructor ////
+
     public LuggageDaoImpl() {
-        luggages = new ArrayList<Luggage>();
+        luggages = new ArrayList<>();
     }
 
+    //// Overridden Methods ////
+
     @Override
-    public void addLuggage(Scanner scanner, int luggageId) {
+    public boolean addLuggage(Scanner scanner, int luggageId) {
         System.out.println("\n-- Luggage Deposit --\n");
-        System.out.println("- Please provide your last name");
+        System.out.println("- Please provide your last name: ");
 
         System.out.print("> ");
-        String lastName = scanner.nextLine();
-
-        if (lastName.length() == 0) {
-            System.err.println("\nPlease provide a valid last name!\n");
-            return;
-        }
-
-        luggages.add(new Luggage(luggageId, lastName));
-        System.out.println("\nYour unique code is: " + lastName.toUpperCase() + "#" + luggageId);
-        System.out.println("\nNote: Don't lose it as you may not be able to retrieve your luggage!");
 
         try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            System.err.println("Interrupted");
-        }
-    }
+            String lastName = scanner.nextLine();
 
-    @Override
-    public void inspectLuggage(Scanner scanner, Pricing pricing, boolean retrieve) {
-        Optional<Luggage> luggage = getLuggage(scanner, retrieve);
-
-        if (luggage.isPresent()) {
-            System.out.println(luggage.get().toString());
-            StringBuilder stringBuilder = new StringBuilder("- Accumulated Cost: ")
-                    .append(getCost(luggage.get(), pricing))
-                    .append("\n");
-            System.out.println(stringBuilder.toString());
-
-            if (retrieve) {
-                luggages.remove(luggage.get());
-                System.out.println("Luggage Retrieved!");
+            if (lastName.length() == 0 || !lastName.matches("[a-zA-Z]+")) {
+                throw new InvalidCodeFormatException("\nPlease provide a valid last name!\n");
             }
+
+            luggages.add(new Luggage(luggageId + 1, lastName));
+            System.out.println("\nYour unique code is: " + lastName.toUpperCase() + "#" + (luggageId + 1));
+            System.out.println("\nNote: Don't lose it as you may not be able to retrieve your luggage!");
+
+        } catch (InvalidCodeFormatException e) {
+            System.err.println(e.getMessage());
+            return false;
         }
+
+        return true;
     }
 
     @Override
@@ -65,11 +55,11 @@ public class LuggageDaoImpl implements LuggageDao {
         Duration duration = Duration.between(luggage.getTimeOfDeposit(), LocalDateTime.now());
         long hours = duration.toHours() + (duration.toMinutes() % 60 > 0 ? 1 : 0);
 
-        int cost = pricing.firstHourPrice;
+        int cost = pricing.getFirstHourPrice();
         hours--;
 
         if (hours > 0) {
-            cost += hours * pricing.baseHourPrice;
+            cost += hours * pricing.getBaseHourPrice();
         }
 
         return cost;
@@ -80,7 +70,58 @@ public class LuggageDaoImpl implements LuggageDao {
         return luggages.size();
     }
 
-    public Optional<Luggage> getLuggage(Scanner scanner, boolean retrieve) {
+    @Override
+    public void inspectLuggage(Scanner scanner, Pricing pricing, boolean retrieve) {
+        Optional<Luggage> luggage = getLuggage(scanner, retrieve);
+
+        try {
+            if (!luggage.isPresent()) {
+                throw new LuggageNotFoundException("\nThis code has no associated luggage!\n");
+            }
+
+            System.out.println(luggage.get().toString());
+            StringBuilder stringBuilder = new StringBuilder("- Accumulated Cost: ")
+                    .append(getCost(luggage.get(), pricing))
+                    .append("\n");
+            System.out.println(stringBuilder.toString());
+
+            if (retrieve) {
+                luggages.remove(luggage.get());
+                System.out.println("Luggage Retrieved!");
+            }
+        } catch (LuggageNotFoundException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    //// Private Methods ////
+
+    private int binarySearch(List<Luggage> luggages, int luggageId, int left, int right) {
+        if (left > right) {
+            return -1;
+        }
+
+        int mid = (left + right) / 2;
+        int midId = luggages.get(mid).getLuggageId();
+
+        if (luggageId == midId) {
+            return mid;
+        }
+
+        if (luggageId < midId) {
+            return binarySearch(luggages, luggageId, left, mid - 1);
+        }
+
+        return binarySearch(luggages, luggageId, mid + 1, right);
+    }
+
+    private boolean checkOwnership(Luggage luggage, String providedId) {
+        String requiredId = luggage.getOwnerLastName().toUpperCase() + "#" + luggage.getLuggageId();
+
+        return requiredId.equals(providedId);
+    }
+
+    private Optional<Luggage> getLuggage(Scanner scanner, boolean retrieve) {
         System.out.println("\n-- Luggage Management --\n");
         System.out.println("- Please provide your access code: ");
 
@@ -105,50 +146,21 @@ public class LuggageDaoImpl implements LuggageDao {
     }
 
     private int getLuggageIndexById(String providedId) {
-        int luggageId = 0;
-
         try {
             String[] parts = providedId.split("#", 2);
-            luggageId = Integer.parseInt(parts[1]);
+            int luggageId = Integer.parseInt(parts[1]);
 
             if (!parts[0].matches("[A-Z]+"))
-                throw new IllegalArgumentException();
+                throw new InvalidCodeFormatException("\nThe last name part of the code is invalid!\n");
 
-        } catch (NumberFormatException e) {
-            System.err.println("The numerical part of the code is invalid!");
-        } catch (IllegalArgumentException e) {
-            System.err.println("The last name part of the code is invalid!");
-        }
+            return binarySearch(luggages, luggageId, 0, luggages.size() - 1);
 
-        return binarySearch(luggages, luggageId, 0, luggages.size());
-    }
-
-    private int binarySearch(List<Luggage> luggages, int luggageId, int left, int right) {
-        if (left > right) {
+        } catch (NumberFormatException | InvalidCodeFormatException e) {
+            System.err.println(e.getMessage());
+            return -1;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("\nMissing # separator!");
             return -1;
         }
-
-        int mid = (left + right) / 2;
-        int midId = luggages.get(mid).getLuggageId();
-
-        if (luggageId == midId) {
-            return mid;
-        }
-
-        if (luggageId < midId) {
-            return binarySearch(luggages, luggageId, left, mid - 1);
-        }
-
-        if (luggageId > midId) {
-            return binarySearch(luggages, luggageId, mid + 1, right);
-        }
-
-        return -1;
-    }
-
-    private boolean checkOwnership(Luggage luggage, String providedId) {
-        String requiredId = luggage.getOwnerLastName().toUpperCase() + "#" + luggage.getLuggageId();
-
-        return requiredId.equals(providedId);
     }
 }

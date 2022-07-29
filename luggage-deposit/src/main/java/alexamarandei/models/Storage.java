@@ -1,11 +1,15 @@
 package alexamarandei.models;
 
+import alexamarandei.exceptions.AccessNotAllowedException;
+
 public final class Storage {
     private static volatile Storage instance;
 
     private String adminCode;
     private int numberOfStorageUnits;
     private Pricing pricing;
+
+    //// Constructor ////
 
     private Storage(
             String adminCode,
@@ -15,6 +19,8 @@ public final class Storage {
         this.numberOfStorageUnits = numberOfStorageUnits;
         this.pricing = pricing;
     }
+
+    //// Singleton Instance Provider ////
 
     public static Storage getInstance(
             String adminCode,
@@ -35,17 +41,21 @@ public final class Storage {
         }
     }
 
+    //// Getters ////
+
     public int getNumberOfStorageUnits() {
         return numberOfStorageUnits;
     }
 
+    public Pricing getPricing() {
+        return pricing;
+    }
+
+    //// Setters ////
+
     public void setNumberOfStorageUnits(String adminCode, int numberOfStorageUnits) {
         if (isAdmin(adminCode))
             this.numberOfStorageUnits = numberOfStorageUnits;
-    }
-
-    public Pricing getPricing() {
-        return pricing;
     }
 
     public void setPricing(String adminCode, Pricing pricing) {
@@ -53,12 +63,18 @@ public final class Storage {
             this.pricing = pricing;
     }
 
+    //// Private Methods ////
+
     private boolean isAdmin(String adminCode) {
-        if (this.adminCode.equals(adminCode))
+        try {
+            if (!this.adminCode.equals(adminCode))
+                throw new AccessNotAllowedException("\nYou are not allowed to perform this kind of operation!\n");
+
             return true;
 
-        System.err.println("You are not allowed to perform this kind of operation!");
-        return false;
+        } catch (AccessNotAllowedException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
     }
-
 }
