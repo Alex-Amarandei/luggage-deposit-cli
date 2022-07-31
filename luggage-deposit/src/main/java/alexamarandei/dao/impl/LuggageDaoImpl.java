@@ -106,10 +106,10 @@ public class LuggageDaoImpl implements LuggageDao {
             }
 
             System.out.println(luggage.get().toString());
-            StringBuilder stringBuilder = new StringBuilder("- Accumulated Cost: ")
+            StringBuilder sb = new StringBuilder("- Accumulated Cost: ")
                     .append(getCost(luggage.get(), pricing))
                     .append("\n");
-            System.out.println(stringBuilder.toString());
+            System.out.println(sb.toString());
 
             if (retrieve) {
                 luggages.remove(luggage.get());

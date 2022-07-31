@@ -58,7 +58,7 @@ public class Luggage {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("\n-- Luggage #")
+        StringBuilder sb = new StringBuilder("\n-- Luggage #")
                 .append(luggageId)
                 .append(" --\n\n")
                 .append("- Owner: ")
@@ -69,6 +69,6 @@ public class Luggage {
                         "dd-MM-yyyy HH:mm")))
                 .append("\n");
 
-        return stringBuilder.toString();
+        return sb.toString();
     }
 }
